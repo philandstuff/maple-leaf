@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, php, runCommand }:
+{ fetchurl, runCommand }:
 
 let
 
