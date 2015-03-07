@@ -2,6 +2,6 @@
   maple-leaf =
     { config, pkgs, ... }:
     {
-      imports = [ ./tarsnap.nix ];
+      imports = [ ./tarsnap.nix ./owncloud.nix ];
     };
 }
