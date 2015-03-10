@@ -1,17 +1,22 @@
 { pkgs, ... }:
 let
-  owncloudPkg = (import ./owncloud/default.nix { inherit (pkgs) fetchurl runCommand; });
+  dbPassword = "CHANGEME";
+  adminPassword = "CHANGEME";
 in
 {
-  environment.systemPackages = [ owncloudPkg pkgs.apacheHttpd pkgs.php ];
+  environment.systemPackages = [ pkgs.owncloud pkgs.apacheHttpd pkgs.php ];
+
+  services.postgresql.enable = true;
+  services.postgresql.package = pkgs.postgresql;
 
   services.httpd.adminAddr = "foo@example.org";
   services.httpd.enable = true;
   services.httpd.enablePHP = true;
-  services.httpd.extraConfig = ''
-    Alias /owncloud ${owncloudPkg}
-    <Directory ${owncloudPkg}>
-     AllowOverride All
-    </Directory>
-  '';
+  services.httpd.virtualHosts = [{
+    hostName = "owncloud.local";
+    extraSubservices = [{
+      serviceType = "owncloud";
+      inherit adminPassword dbPassword;
+    }];
+  }];
 }
