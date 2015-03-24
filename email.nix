@@ -13,8 +13,6 @@ in
   };
 
   config = {
-    environment.systemPackages = [ pkgs.postfix ];
-
     services.postfix.enable = true;
     services.postfix.hostname = cfg.domain;
   };
