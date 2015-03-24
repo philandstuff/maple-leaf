@@ -1,22 +1,32 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
+with lib;
 let
-  dbPassword = "CHANGEME";
-  adminPassword = "CHANGEME";
+  cfg = config.services.owncloud;
 in
 {
-  environment.systemPackages = [ pkgs.owncloud pkgs.apacheHttpd pkgs.php ];
+  options = {
+    services.owncloud = {
+      adminPassword = mkOption { type = types.str; };
+      dbPassword = mkOption { type = types.str; };
+    };
+  };
 
-  services.postgresql.enable = true;
-  services.postgresql.package = pkgs.postgresql;
+  config = {
 
-  services.httpd.adminAddr = "foo@example.org";
-  services.httpd.enable = true;
-  services.httpd.enablePHP = true;
-  services.httpd.virtualHosts = [{
-    hostName = "owncloud.local";
-    extraSubservices = [{
-      serviceType = "owncloud";
-      inherit adminPassword dbPassword;
+    environment.systemPackages = [ pkgs.owncloud pkgs.apacheHttpd pkgs.php ];
+
+    services.postgresql.enable = true;
+    services.postgresql.package = pkgs.postgresql;
+
+    services.httpd.adminAddr = "foo@example.org";
+    services.httpd.enable = true;
+    services.httpd.enablePHP = true;
+    services.httpd.virtualHosts = [{
+      hostName = "owncloud.local";
+      extraSubservices = with cfg; [{
+        serviceType = "owncloud";
+        inherit adminPassword dbPassword;
+      }];
     }];
-  }];
+  };
 }
