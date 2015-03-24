@@ -13,6 +13,8 @@ in
   };
 
   config = {
+    services.dovecot2.enable = true;
+
     services.postfix.enable = true;
     services.postfix.hostname = cfg.domain;
   };
